@@ -18,6 +18,7 @@ const ThemeSwitcher = () => {
 
   // useEffect only runs on the client, so now we can safely show the UI
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 클라이언트 마운트 여부만 표시하는 next-themes SSR 하이드레이션 가드 패턴, setState 없이는 구현 불가
     setMounted(true);
   }, []);
 

@@ -90,22 +90,22 @@ components/
    - 비즈니스 로직 없음
    - props로 모든 동작 제어
 
-2. **layout/** *(아직 미도입)*: 페이지 구조를 담당하는 레이아웃 컴포넌트
+2. **layout/** _(아직 미도입)_: 페이지 구조를 담당하는 레이아웃 컴포넌트
    - 전체 페이지 구조
    - 공통 헤더/푸터
    - 컨테이너 래퍼
 
-3. **navigation/** *(아직 미도입)*: 네비게이션 관련 컴포넌트
+3. **navigation/** _(아직 미도입)_: 네비게이션 관련 컴포넌트
    - 메뉴, 브레드크럼
    - 페이지네이션
    - 사이드바
 
-4. **sections/** *(아직 미도입)*: 특정 페이지 섹션을 위한 컴포넌트
+4. **sections/** _(아직 미도입)_: 특정 페이지 섹션을 위한 컴포넌트
    - 홈페이지 섹션들
    - 랜딩 페이지 블록
    - 마케팅 컴포넌트
 
-5. **providers/** *(아직 미도입)*: React Context 프로바이더
+5. **providers/** _(아직 미도입)_: React Context 프로바이더
    - 전역 상태 관리
    - 테마 관리 (현재는 `app/layout.tsx`에서 `next-themes`의 `ThemeProvider`를 직접 사용)
    - 인증 상태
@@ -206,13 +206,13 @@ import { cn } from "../../lib/utils";
 
 `components.json`의 `aliases` 항목(`components`, `utils`, `ui`, `lib`, `hooks`)은 별개의 개념으로, `npx shadcn@latest add`가 새 컴포넌트 파일을 생성할 위치와 그 안에서 쓸 import 문을 결정하기 위한 shadcn CLI 전용 설정이다 — import 문에 직접 등장하는 경로 별칭이 아니다.
 
-| shadcn CLI alias | 실제 생성 경로 |
-| --- | --- |
-| `components` | `@/components` |
-| `ui` | `@/components/ui` |
-| `lib` | `@/lib` |
-| `utils` | `@/lib/utils` |
-| `hooks` | `@/hooks` (아직 `hooks/` 폴더 없음) |
+| shadcn CLI alias | 실제 생성 경로                      |
+| ---------------- | ----------------------------------- |
+| `components`     | `@/components`                      |
+| `ui`             | `@/components/ui`                   |
+| `lib`            | `@/lib`                             |
+| `utils`          | `@/lib/utils`                       |
+| `hooks`          | `@/hooks` (아직 `hooks/` 폴더 없음) |
 
 ## 📝 새 파일/폴더 추가 규칙
 

@@ -182,12 +182,7 @@ export function ProductInteractions({ productId }) {
 interface ButtonProps {
   children: React.ReactNode;
   variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link";
+    "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
   size?: "default" | "sm" | "lg" | "icon";
   disabled?: boolean;
   loading?: boolean;

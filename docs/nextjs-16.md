@@ -548,21 +548,26 @@ function UserProfile({ user }: { user: User }) {
 
 ## 코드 품질 체크리스트
 
-개발 완료 후 다음 명령어들을 반드시 실행하세요 (이 프로젝트에는 `typecheck`/`format:check`/`check-all` 스크립트가 없으므로, 타입 체크는 `npx tsc --noEmit`으로 대체합니다):
+개발 완료 후 다음 명령어들을 실행하세요:
 
 ```bash
 # 🚀 필수: 타입 체크
-npx tsc --noEmit
+npm run typecheck
 
 # 🚀 필수: 린트 검사
 npm run lint
+
+# 🚀 필수: 포맷 검사
+npm run format:check
 
 # 🚀 필수: 빌드 테스트
 npm run build
 ```
 
+`pre-commit`(Husky + lint-staged)이 커밋 시 ESLint `--fix`/Prettier `--write`를, `pre-push`가 `npm run typecheck`를 자동 실행하므로 위 명령은 대부분 훅이 대신 처리하지만, 빌드 테스트는 훅에 포함되어 있지 않아 수동 실행이 필요합니다.
+
 ## 참고: 이 프로젝트의 버전 관리 유의사항
 
-`package.json`에서 `next`가 `"latest"`로 고정되어 있어 설치 시점마다 실제 버전이 달라질 수 있습니다(현재 확인된 버전: 16.3.0). 이 문서의 예시는 16.x 기준으로 작성되었으며, 향후 메이저 업그레이드 시 이 문서도 함께 갱신이 필요합니다. 또한 `eslint-config-next`가 `15.3.1`로 핀 되어 있어 next 본체 버전과 어긋나 있으니, lint 규칙이 최신 Next 16 권장사항과 다를 수 있는 점을 참고하세요.
+`package.json`에서 `next`가 `"latest"`로 고정되어 있어 설치 시점마다 실제 버전이 달라질 수 있습니다(현재 확인된 버전: 16.3.0). 이 문서의 예시는 16.x 기준으로 작성되었으며, 향후 메이저 업그레이드 시 이 문서도 함께 갱신이 필요합니다. `eslint-config-next`는 `^16.3.1`로 next 본체 버전과 맞춰져 있습니다.
 
 이 지침을 따라 Next.js 16의 모든 기능을 최대한 활용하여 현대적이고 성능 최적화된 애플리케이션을 개발하세요.

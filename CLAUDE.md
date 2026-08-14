@@ -9,13 +9,16 @@ Next.js 16 (App Router) + Supabase Auth(SSR 쿠키 기반) 스타터킷. `create
 ## 자주 사용하는 명령어
 
 ```bash
-npm run dev     # 개발 서버 실행 (localhost:3000)
-npm run build   # 프로덕션 빌드
-npm run start   # 프로덕션 서버 실행
-npm run lint    # ESLint 검사 (next/core-web-vitals + next/typescript)
+npm run dev           # 개발 서버 실행 (localhost:3000)
+npm run build         # 프로덕션 빌드
+npm run start         # 프로덕션 서버 실행
+npm run lint          # ESLint 검사 (next/core-web-vitals + next/typescript)
+npm run typecheck     # tsc --noEmit
+npm run format        # Prettier로 전체 파일 포맷
+npm run format:check  # Prettier 포맷 검사만 (수정 없음)
 ```
 
-`typecheck`, `format`, `check-all` 같은 스크립트는 `package.json`에 정의되어 있지 않다 (`docs/` 아래 가이드 문서에서 언급하지만 실제로는 존재하지 않음). 타입 체크가 필요하면 `npx tsc --noEmit`을 직접 실행한다. 별도의 테스트 러너는 설정되어 있지 않다.
+Husky + lint-staged가 설정되어 있다: `pre-commit` 훅에서 staged 파일에 ESLint `--fix`와 Prettier `--write`를 자동 실행하고, `pre-push` 훅에서 `npm run typecheck`(프로젝트 전체 타입 검사)를 자동 실행한다. 설정은 `.husky/pre-commit`, `.husky/pre-push`, `package.json`의 `lint-staged` 필드 참고. `check-all` 같은 통합 스크립트는 없다. 별도의 테스트 러너는 설정되어 있지 않다.
 
 `next`, `@supabase/ssr`, `@supabase/supabase-js`가 모두 `package.json`에 `"latest"`로 고정되어 있어, `npm install` 시점마다 실제 설치 버전이 달라질 수 있다 (현재 확인된 버전: Next 16.3.0, React 19.2.8, @supabase/ssr 0.12.4). 버전에 민감한 이슈를 다룰 때는 `node_modules/*/package.json`에서 실제 설치 버전을 먼저 확인할 것.
 

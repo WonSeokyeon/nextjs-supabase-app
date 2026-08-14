@@ -1456,7 +1456,7 @@ function SecureForm() {
 
 ## 💡 코드 품질 확인
 
-- [ ] `npm run lint` 통과 (이 프로젝트에는 `check-all`/`typecheck`/`format` 스크립트가 없다 — 타입 체크는 `npx tsc --noEmit`으로 직접 실행)
+- [ ] `npm run lint` 통과, `npm run typecheck` 통과, `npm run format:check` 통과 (pre-commit/pre-push 훅이 대부분 자동 실행하지만 수동 확인 권장)
 - [ ] TypeScript 엄격 모드 오류 없음
 - [ ] ESLint 규칙 준수
 - [ ] 불필요한 리렌더링 없음
