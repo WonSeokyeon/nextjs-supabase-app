@@ -60,7 +60,11 @@ Next.js 16부터 `middleware.ts`/`middleware()`가 `proxy.ts`/`proxy()`로 대�
 
 ## docs/ 문서 안내
 
-`docs/` 아래에는 Next.js 16 / React 19 패턴에 대한 보편적 가이드 문서(`project-structure.md`, `component-patterns.md`, `styling-guide.md`, `forms-react-hook-form.md`, `nextjs-16.md`)가 있다. 원래 다른 보일러플레이트(`src/` 레이아웃 전제)에서 가져온 문서라 이 저장소와 어긋나는 부분이 많았으나, 구조·버전·존재하지 않는 스크립트 언급 등은 실제 상태에 맞게 수정해 두었다. 단, `forms-react-hook-form.md`는 여전히 **아직 설치/적용되지 않은** React Hook Form + Zod 패턴을 제안하는 참고 문서이므로(문서 상단에 명시), 실제로 적용하려면 관련 패키지와 shadcn 컴포넌트를 먼저 설치해야 한다.
+`docs/` 아래에는 Next.js 16 / React 19 패턴에 대한 보편적 가이드 문서(`project-structure.md`, `component-patterns.md`, `styling-guide.md`, `forms-react-hook-form.md`, `nextjs-16.md`)가 있다. 원래 다른 보일러플레이트(`src/` 레이아웃 전제)에서 가져온 문서라 이 저장소와 어긋나는 부분이 많았으나, 구조·버전·존재하지 않는 스크립트 언급 등은 실제 상태에 맞게 수정해 두었다.
+
+**주의: `.claude/agents/docs/guides/`에도 동일한 파일명 5개가 존재하지만, 이는 위 `docs/`와 다른 파일이다.** 이 디렉터리는 프로젝트에 맞게 수정되지 않은 **원본 제네릭 템플릿 사본**으로, `src/app` 구조를 전제하고 Tailwind v4를 가정하는 등 이 저장소의 실제 상태와 맞지 않는 내용을 담고 있다 (문서 생성/정리 에이전트가 참조하는 소스로 추정). 코드를 작성할 때는 반드시 루트 `docs/`만 참고하고, `.claude/agents/docs/guides/`는 참고하지 말 것.
+
+`forms-react-hook-form.md`는 여전히 **아직 설치/적용되지 않은** React Hook Form + Zod 패턴을 제안하는 참고 문서이므로(문서 상단에 명시), 실제로 적용하려면 관련 패키지와 shadcn 컴포넌트를 먼저 설치해야 한다.
 
 `docs/`는 참고 자료일 뿐이며, 실제 동작이 궁금할 때는 항상 코드를 1차 소스로 신뢰할 것.
 
