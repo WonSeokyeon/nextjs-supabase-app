@@ -75,3 +75,13 @@ Next.js 16부터 `middleware.ts`/`middleware()`가 `proxy.ts`/`proxy()`로 대�
 ## MCP 서버
 
 `.mcp.json`에 supabase, playwright, context7, sequential-thinking, shadcn, shrimp-task-manager MCP 서버가 설정되어 있다. shadcn/ui 컴포넌트 추가 시 `npx shadcn@latest add [component]` 대신 `shadcn` MCP 도구를 우선 활용할 수 있다.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
