@@ -1,58 +1,95 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import { Suspense } from "react";
+import { CalendarPlus, LayoutDashboard, Share2, Users } from "lucide-react";
+
+import { AuthButton } from "@/components/auth-button";
+import { EnvVarWarning } from "@/components/env-var-warning";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { hasEnvVars } from "@/lib/utils";
+
+const FEATURES = [
+  {
+    icon: CalendarPlus,
+    title: "간편한 이벤트 생성",
+    description: "제목, 날짜, 장소만 입력하면 즉시 이벤트가 만들어져요.",
+  },
+  {
+    icon: Share2,
+    title: "원클릭 초대 시스템",
+    description: "자동 생성된 초대 링크를 카카오톡으로 간편하게 공유하세요.",
+  },
+  {
+    icon: Users,
+    title: "실시간 참여자 관리",
+    description: "누가 참여했는지 참여자 목록이 실시간으로 업데이트돼요.",
+  },
+  {
+    icon: LayoutDashboard,
+    title: "관리자 대시보드",
+    description: "플랫폼 전체 현황을 한눈에 파악할 수 있어요.",
+  },
+];
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center">
-      <div className="flex w-full flex-1 flex-col items-center gap-20">
-        <nav className="flex h-16 w-full justify-center border-b border-b-foreground/10">
-          <div className="flex w-full max-w-5xl items-center justify-between p-3 px-5 text-sm">
-            <div className="flex items-center gap-5 font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
-              </div>
-            </div>
-            {!hasEnvVars ? (
-              <EnvVarWarning />
-            ) : (
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            )}
-          </div>
-        </nav>
-        <div className="flex max-w-5xl flex-1 flex-col gap-20 p-5">
-          <Hero />
-          <main className="flex flex-1 flex-col gap-6 px-4">
-            <h2 className="mb-4 text-xl font-medium">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
+    <div className="flex min-h-screen flex-col">
+      <nav className="sticky top-0 z-10 flex h-16 w-full items-center justify-center border-b bg-background">
+        <div className="flex w-full max-w-5xl items-center justify-between px-5">
+          <Link href="/" className="text-lg font-bold">
+            Gather
+          </Link>
+          {!hasEnvVars ? (
+            <EnvVarWarning />
+          ) : (
+            <Suspense>
+              <AuthButton />
+            </Suspense>
+          )}
         </div>
+      </nav>
 
-        <footer className="mx-auto flex w-full items-center justify-center gap-8 border-t py-16 text-center text-xs">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
+      <main className="flex flex-1 flex-col items-center gap-20 px-5 py-16">
+        <section className="flex max-w-xl flex-col items-center gap-6 text-center">
+          <h1 className="text-3xl font-bold !leading-tight lg:text-4xl">
+            일회성 이벤트를 간편하게 관리하는
+            <br />
+            올인원 플랫폼
+          </h1>
+          <p className="text-muted-foreground">
+            초대 링크 하나로 모든 것을 해결하세요. 5~30명 규모의 소규모 모임을
+            위한 가장 빠른 이벤트 관리 방법입니다.
           </p>
-          <ThemeSwitcher />
-        </footer>
-      </div>
-    </main>
+          <Button asChild size="lg">
+            <Link href="/auth/login">무료로 시작하기</Link>
+          </Button>
+        </section>
+
+        <section className="grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2">
+          {FEATURES.map((feature) => {
+            const Icon = feature.icon;
+            return (
+              <Card key={feature.title}>
+                <CardHeader>
+                  <Icon className="size-8 text-primary" />
+                  <CardTitle>{feature.title}</CardTitle>
+                  <CardDescription>{feature.description}</CardDescription>
+                </CardHeader>
+              </Card>
+            );
+          })}
+        </section>
+      </main>
+
+      <footer className="flex w-full items-center justify-center border-t py-8">
+        <ThemeSwitcher />
+      </footer>
+    </div>
   );
 }
