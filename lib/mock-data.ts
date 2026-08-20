@@ -1,6 +1,7 @@
 // UI 프로토타이핑 전용 더미 데이터 생성 유틸리티 — Task 007(DB 연동)에서 대체될 예정
 import type { Event } from "@/lib/types/event";
 import type { EventParticipant } from "@/lib/types/participant";
+import type { Profile } from "@/lib/types/profile";
 
 const SAMPLE_TITLES = [
   "동아리 여름 MT",
@@ -81,6 +82,32 @@ export function createMockEvent(overrides: Partial<Event> = {}): Event {
 
 export function createMockEvents(count: number): Event[] {
   return Array.from({ length: count }, () => createMockEvent());
+}
+
+const SAMPLE_DISPLAY_NAMES = [
+  "김민준",
+  "이서연",
+  "박도윤",
+  "최지우",
+  "정하은",
+  "강시우",
+];
+
+let mockProfileSequence = 0;
+
+export function createMockProfile(overrides: Partial<Profile> = {}): Profile {
+  const index = mockProfileSequence++;
+  const displayName = pick(SAMPLE_DISPLAY_NAMES, index);
+
+  return {
+    id: crypto.randomUUID(),
+    email: `user${index}@example.com`,
+    displayName,
+    avatarUrl: null,
+    role: "user",
+    createdAt: new Date().toISOString(),
+    ...overrides,
+  };
 }
 
 export function createMockParticipants(
