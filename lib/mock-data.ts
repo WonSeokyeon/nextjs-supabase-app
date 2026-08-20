@@ -84,6 +84,16 @@ export function createMockEvents(count: number): Event[] {
   return Array.from({ length: count }, () => createMockEvent());
 }
 
+// mock 단계 임시 헬퍼 — eventId를 결정론적으로 해시해 항상 동일한 주최/참여 여부를 반환한다.
+// 실제 소유권 판별은 Task 008에서 event.createdBy === session.user.id 비교로 대체될 예정.
+export function isMockOrganizer(eventId: string): boolean {
+  let hash = 0;
+  for (const char of eventId) {
+    hash = (hash * 31 + char.charCodeAt(0)) % 1000;
+  }
+  return hash % 2 === 0;
+}
+
 const SAMPLE_DISPLAY_NAMES = [
   "김민준",
   "이서연",

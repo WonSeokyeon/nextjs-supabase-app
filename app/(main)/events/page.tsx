@@ -2,9 +2,10 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
 
+import { Badge } from "@/components/ui/badge";
 import { EventCard } from "@/components/event-card";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
-import { createMockEvents } from "@/lib/mock-data";
+import { createMockEvents, isMockOrganizer } from "@/lib/mock-data";
 
 export default function EventsPage() {
   return (
@@ -26,11 +27,24 @@ async function EventsGrid() {
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      {events.map((event) => (
-        <Link key={event.id} href={`/events/${event.id}`}>
-          <EventCard event={event} />
-        </Link>
-      ))}
+      {events.map((event) => {
+        const isOrganizer = isMockOrganizer(event.id);
+        return (
+          <Link
+            key={event.id}
+            href={`/events/${event.id}`}
+            className="relative block"
+          >
+            <Badge
+              variant={isOrganizer ? "default" : "outline"}
+              className="absolute left-2 top-2 z-10"
+            >
+              {isOrganizer ? "주최" : "참여"}
+            </Badge>
+            <EventCard event={event} />
+          </Link>
+        );
+      })}
     </div>
   );
 }

@@ -19,16 +19,23 @@ import {
 
 interface DeleteEventDialogProps {
   eventTitle: string;
+  // 삭제 후 이동할 경로 — 생략하면 현재 페이지에 머무른다(예: 관리자 테이블에서 행 삭제 시)
+  redirectTo?: string;
 }
 
-export function DeleteEventDialog({ eventTitle }: DeleteEventDialogProps) {
+export function DeleteEventDialog({
+  eventTitle,
+  redirectTo,
+}: DeleteEventDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
   function handleConfirm() {
     setOpen(false);
     toast.success("이벤트가 삭제되었습니다");
-    router.push("/events");
+    if (redirectTo) {
+      router.push(redirectTo);
+    }
   }
 
   return (

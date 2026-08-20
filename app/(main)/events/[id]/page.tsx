@@ -14,6 +14,7 @@ import {
   createMockEvent,
   createMockParticipants,
   createMockProfile,
+  isMockOrganizer,
 } from "@/lib/mock-data";
 
 const STATUS_LABEL = {
@@ -56,6 +57,7 @@ async function EventDetailContent({
   const event = createMockEvent({ id });
   const participants = createMockParticipants(id, 4);
   const status = STATUS_LABEL[event.status];
+  const isOrganizer = isMockOrganizer(id);
 
   return (
     <>
@@ -90,16 +92,18 @@ async function EventDetailContent({
         </div>
       </div>
 
-      <div className="mb-6 flex flex-wrap gap-2">
-        <InviteShareButton inviteCode={event.inviteCode} />
-        <Button variant="outline" asChild>
-          <Link href={`/events/${id}/edit`}>
-            <PencilIcon />
-            수정
-          </Link>
-        </Button>
-        <DeleteEventDialog eventTitle={event.title} />
-      </div>
+      {isOrganizer && (
+        <div className="mb-6 flex flex-wrap gap-2">
+          <InviteShareButton inviteCode={event.inviteCode} />
+          <Button variant="outline" asChild>
+            <Link href={`/events/${id}/edit`}>
+              <PencilIcon />
+              수정
+            </Link>
+          </Button>
+          <DeleteEventDialog eventTitle={event.title} redirectTo="/events" />
+        </div>
+      )}
 
       <section>
         <h2 className="mb-2 text-sm font-semibold">
