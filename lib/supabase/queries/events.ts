@@ -20,21 +20,49 @@ function mapRow(row: Tables<"events">): Event {
   };
 }
 
-// F007, F008: 로그인한 사용자가 주최한 이벤트 목록
-export async function getMyEvents(): Promise<Event[]> {
+export interface MyEvent extends Event {
+  role: "organizer" | "participant";
+}
+
+// F007, F008: 로그인한 사용자가 주최했거나(organizer) 참여한(participant) 이벤트 목록
+export async function getMyEvents(): Promise<MyEvent[]> {
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();
   const userId = claims?.claims.sub;
   if (!userId) return [];
 
-  const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .eq("created_by", userId)
-    .order("start_at", { ascending: true });
+  const [organizedResult, participantRowsResult] = await Promise.all([
+    supabase.from("events").select("*").eq("created_by", userId),
+    supabase
+      .from("event_participants")
+      .select("event_id")
+      .eq("user_id", userId),
+  ]);
 
-  if (error || !data) return [];
-  return data.map(mapRow);
+  const organizedEvents: MyEvent[] = (organizedResult.data ?? []).map(
+    (row) => ({ ...mapRow(row), role: "organizer" as const }),
+  );
+
+  const participatedIds = (participantRowsResult.data ?? []).map(
+    (row) => row.event_id,
+  );
+
+  const participatedEvents: MyEvent[] = participatedIds.length
+    ? (
+        (await supabase.from("events").select("*").in("id", participatedIds))
+          .data ?? []
+      ).map((row) => ({ ...mapRow(row), role: "participant" as const }))
+    : [];
+
+  // 조직자가 본인 이벤트에 직접 참여 등록을 해도 중복 노출되지 않도록 organizer를 우선한다
+  const merged = new Map<string, MyEvent>();
+  for (const event of [...organizedEvents, ...participatedEvents]) {
+    if (!merged.has(event.id)) merged.set(event.id, event);
+  }
+
+  return [...merged.values()].sort(
+    (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime(),
+  );
 }
 
 // F005: 이벤트 상세 조회

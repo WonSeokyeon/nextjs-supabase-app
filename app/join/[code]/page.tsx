@@ -1,11 +1,15 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { CalendarIcon, MapPinIcon } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { JoinConfirmButton } from "@/components/join-confirm-button";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { getEventByInviteCode } from "@/lib/supabase/queries/events";
+import { hasJoinedEvent } from "@/lib/supabase/queries/participants";
+import { createClient } from "@/lib/supabase/server";
 
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   year: "numeric",
@@ -39,6 +43,13 @@ async function JoinEventContent({
   const event = await getEventByInviteCode(code);
   if (!event) notFound();
 
+  const supabase = await createClient();
+  const { data: claims } = await supabase.auth.getClaims();
+  const userId = claims?.claims.sub;
+  const isOrganizer = userId === event.createdBy;
+  const alreadyJoined =
+    !isOrganizer && userId ? await hasJoinedEvent(event.id, userId) : false;
+
   return (
     <>
       {event.coverImageUrl && (
@@ -69,7 +80,19 @@ async function JoinEventContent({
         </div>
       </div>
 
-      <JoinConfirmButton eventId={event.id} />
+      {isOrganizer ? (
+        <Button size="lg" className="w-full" variant="outline" asChild>
+          <Link href={`/events/${event.id}`}>
+            본인이 주최한 이벤트입니다 · 상세 보기
+          </Link>
+        </Button>
+      ) : alreadyJoined ? (
+        <Button size="lg" className="w-full" variant="outline" asChild>
+          <Link href={`/events/${event.id}`}>이미 참여한 이벤트입니다</Link>
+        </Button>
+      ) : (
+        <JoinConfirmButton eventId={event.id} />
+      )}
     </>
   );
 }

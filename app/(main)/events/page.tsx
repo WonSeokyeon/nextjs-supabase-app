@@ -38,9 +38,11 @@ async function EventsGrid() {
           href={`/events/${event.id}`}
           className="relative block"
         >
-          {/* 참여자 관리(event_participants)는 아직 구현 전이라 이 목록엔 내가 주최한 이벤트만 표시된다 */}
-          <Badge variant="default" className="absolute left-2 top-2 z-10">
-            주최
+          <Badge
+            variant={event.role === "organizer" ? "default" : "outline"}
+            className="absolute left-2 top-2 z-10"
+          >
+            {event.role === "organizer" ? "주최" : "참여"}
           </Badge>
           <EventCard event={event} />
         </Link>

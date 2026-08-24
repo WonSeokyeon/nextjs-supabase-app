@@ -26,7 +26,7 @@ export function ParticipantCard({
   participant,
   profile,
 }: ParticipantCardProps) {
-  const displayName = profile.displayName ?? profile.email;
+  const displayName = profile.displayName;
   const initial = displayName.charAt(0).toUpperCase();
 
   return (

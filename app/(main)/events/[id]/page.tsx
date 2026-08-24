@@ -10,7 +10,10 @@ import { DeleteEventDialog } from "@/components/delete-event-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { InviteShareButton } from "@/components/invite-share-button";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
+import { ParticipantCard } from "@/components/participant-card";
 import { getEventById } from "@/lib/supabase/queries/events";
+import { getEventParticipants } from "@/lib/supabase/queries/participants";
+import { getProfilesByIds } from "@/lib/supabase/queries/profiles";
 import { createClient } from "@/lib/supabase/server";
 
 const STATUS_LABEL = {
@@ -55,6 +58,9 @@ async function EventDetailContent({
   const { data: claims } = await supabase.auth.getClaims();
   const isOrganizer = claims?.claims.sub === event.createdBy;
   const status = STATUS_LABEL[event.status];
+
+  const participants = await getEventParticipants(id);
+  const profiles = await getProfilesByIds(participants.map((p) => p.userId));
 
   return (
     <>
@@ -107,9 +113,28 @@ async function EventDetailContent({
       )}
 
       <section>
-        <h2 className="mb-2 text-sm font-semibold">참여자</h2>
-        {/* 참여자 관리(event_participants 테이블)는 아직 구현 전이므로 빈 상태만 표시한다 */}
-        <EmptyState title="아직 참여자가 없어요" />
+        <h2 className="mb-2 text-sm font-semibold">
+          참여자 ({participants.length})
+        </h2>
+        {participants.length === 0 ? (
+          <EmptyState title="아직 참여자가 없어요" />
+        ) : (
+          <div className="divide-y">
+            {participants.map((participant) => (
+              <ParticipantCard
+                key={participant.id}
+                participant={participant}
+                profile={
+                  profiles.get(participant.userId) ?? {
+                    id: participant.userId,
+                    displayName: "참여자",
+                    avatarUrl: null,
+                  }
+                }
+              />
+            ))}
+          </div>
+        )}
       </section>
     </>
   );

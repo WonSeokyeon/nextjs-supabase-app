@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import type { Event } from "@/lib/types/event";
 import type { EventParticipant } from "@/lib/types/participant";
-import type { Profile } from "@/lib/types/profile";
+import type { DisplayProfile } from "@/lib/supabase/queries/profiles";
 
 // 이벤트 카드 컴포넌트 Props
 export interface EventCardProps {
@@ -11,10 +11,10 @@ export interface EventCardProps {
   onClick?: () => void;
 }
 
-// 참여자 카드 컴포넌트 Props
+// 참여자 카드 컴포넌트 Props — profiles 테이블 기반 최소 표시 정보(이름/아바타)만 사용
 export interface ParticipantCardProps {
   participant: EventParticipant;
-  profile: Profile;
+  profile: DisplayProfile;
 }
 
 // 통계 카드 컴포넌트 Props
