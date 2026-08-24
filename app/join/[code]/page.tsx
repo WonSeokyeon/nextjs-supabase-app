@@ -1,11 +1,11 @@
 import Image from "next/image";
 import { Suspense } from "react";
-import { connection } from "next/server";
-import { CalendarIcon, MapPinIcon, UsersIcon } from "lucide-react";
+import { notFound } from "next/navigation";
+import { CalendarIcon, MapPinIcon } from "lucide-react";
 
 import { JoinConfirmButton } from "@/components/join-confirm-button";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
-import { createMockEvent, createMockParticipants } from "@/lib/mock-data";
+import { getEventByInviteCode } from "@/lib/supabase/queries/events";
 
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   year: "numeric",
@@ -36,10 +36,8 @@ async function JoinEventContent({
   params: Promise<{ code: string }>;
 }) {
   const { code } = await params;
-  // mock 데이터가 new Date()/랜덤 값을 사용해 cacheComponents 프리렌더링과 충돌하므로 동적 렌더링으로 명시
-  await connection();
-  const event = createMockEvent({ inviteCode: code });
-  const participants = createMockParticipants(event.id, 3);
+  const event = await getEventByInviteCode(code);
+  if (!event) notFound();
 
   return (
     <>
@@ -68,10 +66,6 @@ async function JoinEventContent({
         <div className="flex items-center gap-1.5">
           <MapPinIcon className="size-4 shrink-0" />
           <span>{event.location}</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <UsersIcon className="size-4 shrink-0" />
-          <span>현재 {participants.length}명 참여중</span>
         </div>
       </div>
 

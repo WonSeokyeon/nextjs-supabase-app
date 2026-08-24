@@ -1,21 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
-import { connection } from "next/server";
+import { notFound } from "next/navigation";
 import { CalendarIcon, MapPinIcon, PencilIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DeleteEventDialog } from "@/components/delete-event-dialog";
+import { EmptyState } from "@/components/empty-state";
 import { InviteShareButton } from "@/components/invite-share-button";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
-import { ParticipantCard } from "@/components/participant-card";
-import {
-  createMockEvent,
-  createMockParticipants,
-  createMockProfile,
-  isMockOrganizer,
-} from "@/lib/mock-data";
+import { getEventById } from "@/lib/supabase/queries/events";
+import { createClient } from "@/lib/supabase/server";
 
 const STATUS_LABEL = {
   upcoming: { label: "예정", variant: "outline" as const },
@@ -52,12 +48,13 @@ async function EventDetailContent({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  // mock 데이터가 new Date()/랜덤 값을 사용해 cacheComponents 프리렌더링과 충돌하므로 동적 렌더링으로 명시
-  await connection();
-  const event = createMockEvent({ id });
-  const participants = createMockParticipants(id, 4);
+  const event = await getEventById(id);
+  if (!event) notFound();
+
+  const supabase = await createClient();
+  const { data: claims } = await supabase.auth.getClaims();
+  const isOrganizer = claims?.claims.sub === event.createdBy;
   const status = STATUS_LABEL[event.status];
-  const isOrganizer = isMockOrganizer(id);
 
   return (
     <>
@@ -101,23 +98,18 @@ async function EventDetailContent({
               수정
             </Link>
           </Button>
-          <DeleteEventDialog eventTitle={event.title} redirectTo="/events" />
+          <DeleteEventDialog
+            eventId={event.id}
+            eventTitle={event.title}
+            redirectTo="/events"
+          />
         </div>
       )}
 
       <section>
-        <h2 className="mb-2 text-sm font-semibold">
-          참여자 ({participants.length})
-        </h2>
-        <div className="divide-y">
-          {participants.map((participant) => (
-            <ParticipantCard
-              key={participant.id}
-              participant={participant}
-              profile={createMockProfile({ id: participant.userId })}
-            />
-          ))}
-        </div>
+        <h2 className="mb-2 text-sm font-semibold">참여자</h2>
+        {/* 참여자 관리(event_participants 테이블)는 아직 구현 전이므로 빈 상태만 표시한다 */}
+        <EmptyState title="아직 참여자가 없어요" />
       </section>
     </>
   );

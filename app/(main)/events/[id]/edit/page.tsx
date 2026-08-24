@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { connection } from "next/server";
+import { notFound, redirect } from "next/navigation";
 
 import { EventForm } from "@/components/event-form";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
-import { createMockEvent } from "@/lib/mock-data";
+import { getEventById } from "@/lib/supabase/queries/events";
+import { createClient } from "@/lib/supabase/server";
 
 // <input type="datetime-local">가 요구하는 "YYYY-MM-DDTHH:mm" 형식으로 변환(로컬 타임존 기준)
 function toDatetimeLocal(isoString: string): string {
@@ -29,10 +30,15 @@ export default function EditEventPage({
 
 async function EditEventForm({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  // mock 데이터가 new Date()/랜덤 값을 사용해 cacheComponents 프리렌더링과 충돌하므로 동적 렌더링으로 명시
-  await connection();
-  // mock 조회 — 매 요청마다 새 랜덤 값이 생성되므로 새로고침 시 초기값이 달라질 수 있음(Task 007 이후 실제 DB 조회로 대체)
-  const event = createMockEvent({ id });
+  const event = await getEventById(id);
+  if (!event) notFound();
+
+  const supabase = await createClient();
+  const { data: claims } = await supabase.auth.getClaims();
+  // 주최자가 아니면 수정 폼에 접근할 수 없다(RLS도 update를 막지만, UX상 여기서 먼저 차단)
+  if (claims?.claims.sub !== event.createdBy) {
+    redirect(`/events/${id}`);
+  }
 
   return (
     <>

@@ -1,7 +1,11 @@
-// UI 프로토타이핑 전용 더미 데이터 생성 유틸리티 — Task 007(DB 연동)에서 대체될 예정
+// UI 프로토타이핑 전용 더미 데이터 생성 유틸리티
+// events 테이블 자체는 Task 009에서 실제 DB로 대체됨(lib/supabase/queries/events.ts) — 이 파일은
+// 아직 실제 테이블이 없는 참여자/프로필/관리자 대시보드(Task 010, 011)를 위해 계속 사용된다.
 import type { Event } from "@/lib/types/event";
 import type { EventParticipant } from "@/lib/types/participant";
 import type { Profile } from "@/lib/types/profile";
+import { randomInviteCode } from "@/lib/invite-code";
+import { statusFromDates } from "@/lib/event-status";
 
 const SAMPLE_TITLES = [
   "동아리 여름 MT",
@@ -28,27 +32,6 @@ const SAMPLE_DESCRIPTIONS = [
 
 function pick<T>(items: T[], index: number): T {
   return items[index % items.length];
-}
-
-// 초대 코드에서 혼동되는 문자(0/O, 1/I)는 제외
-const INVITE_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-function randomInviteCode(): string {
-  let code = "";
-  for (let i = 0; i < 6; i++) {
-    code +=
-      INVITE_CODE_CHARS[Math.floor(Math.random() * INVITE_CODE_CHARS.length)];
-  }
-  return code;
-}
-
-function statusFromDates(startAt: string, endAt: string): Event["status"] {
-  const now = Date.now();
-  const start = new Date(startAt).getTime();
-  const end = new Date(endAt).getTime();
-  if (now < start) return "upcoming";
-  if (now > end) return "ended";
-  return "ongoing";
 }
 
 // 호출할 때마다 증가시켜 샘플 문구와 시작일을 분산시키는 용도(과거/현재/미래가 골고루 섞이도록)

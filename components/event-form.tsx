@@ -18,7 +18,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createMockEvent } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/client";
+import { randomInviteCode } from "@/lib/invite-code";
 import { eventFormSchema, type EventFormSchema } from "@/lib/schemas/event";
 
 interface EventFormProps {
@@ -43,17 +44,62 @@ export function EventForm({ mode, eventId, defaultValues }: EventFormProps) {
     },
   });
 
-  function onSubmit(values: EventFormSchema) {
+  async function onSubmit(values: EventFormSchema) {
+    const supabase = createClient();
+
     if (mode === "create") {
-      createMockEvent({
+      const { data: claims } = await supabase.auth.getClaims();
+      const userId = claims?.claims.sub;
+      if (!userId) {
+        toast.error("로그인이 필요합니다");
+        return;
+      }
+
+      // 초대 코드는 DB unique 제약을 걸어뒀으므로, 충돌(23505) 시에만 코드를 새로 뽑아 재시도한다
+      let insertError: string | null = null;
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const { error } = await supabase.from("events").insert({
+          title: values.title,
+          description: values.description,
+          location: values.location,
+          start_at: new Date(values.startAt).toISOString(),
+          end_at: new Date(values.endAt).toISOString(),
+          invite_code: randomInviteCode(),
+          created_by: userId,
+        });
+
+        if (!error) {
+          toast.success("이벤트가 생성되었습니다");
+          router.push("/events");
+          return;
+        }
+
+        if (error.code !== "23505") {
+          insertError = error.message;
+          break;
+        }
+      }
+
+      toast.error(
+        insertError ?? "이벤트 생성에 실패했습니다. 다시 시도해주세요",
+      );
+      return;
+    }
+
+    if (!eventId) return;
+    const { error } = await supabase
+      .from("events")
+      .update({
         title: values.title,
         description: values.description,
         location: values.location,
-        startAt: new Date(values.startAt).toISOString(),
-        endAt: new Date(values.endAt).toISOString(),
-      });
-      toast.success("이벤트가 생성되었습니다");
-      router.push("/events");
+        start_at: new Date(values.startAt).toISOString(),
+        end_at: new Date(values.endAt).toISOString(),
+      })
+      .eq("id", eventId);
+
+    if (error) {
+      toast.error("이벤트 수정에 실패했습니다");
       return;
     }
 
@@ -155,7 +201,11 @@ export function EventForm({ mode, eventId, defaultValues }: EventFormProps) {
           )}
         </div>
 
-        <Button type="submit" className="w-full">
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={form.formState.isSubmitting}
+        >
           {mode === "create" ? "이벤트 만들기" : "수정 완료"}
         </Button>
       </form>

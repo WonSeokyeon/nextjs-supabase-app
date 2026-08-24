@@ -14,6 +14,48 @@ export type Database = {
   };
   public: {
     Tables: {
+      events: {
+        Row: {
+          cover_image_url: string | null;
+          created_at: string;
+          created_by: string;
+          description: string;
+          end_at: string;
+          id: string;
+          invite_code: string;
+          location: string;
+          start_at: string;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          cover_image_url?: string | null;
+          created_at?: string;
+          created_by: string;
+          description?: string;
+          end_at: string;
+          id?: string;
+          invite_code: string;
+          location?: string;
+          start_at: string;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          cover_image_url?: string | null;
+          created_at?: string;
+          created_by?: string;
+          description?: string;
+          end_at?: string;
+          id?: string;
+          invite_code?: string;
+          location?: string;
+          start_at?: string;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       instruments: {
         Row: {
           id: number;

@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { connection } from "next/server";
 
 import { Badge } from "@/components/ui/badge";
 import { EventCard } from "@/components/event-card";
+import { EmptyState } from "@/components/empty-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
-import { createMockEvents, isMockOrganizer } from "@/lib/mock-data";
+import { getMyEvents } from "@/lib/supabase/queries/events";
 
 export default function EventsPage() {
   return (
@@ -19,32 +19,32 @@ export default function EventsPage() {
 }
 
 async function EventsGrid() {
-  // mock 데이터가 new Date()/랜덤 값을 사용해 cacheComponents 프리렌더링과 충돌하므로 동적 렌더링으로 명시
-  await connection();
-  const events = createMockEvents(6).sort(
-    (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime(),
-  );
+  const events = await getMyEvents();
+
+  if (events.length === 0) {
+    return (
+      <EmptyState
+        title="아직 만든 이벤트가 없어요"
+        description="새 이벤트를 만들어 친구들을 초대해보세요"
+      />
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      {events.map((event) => {
-        const isOrganizer = isMockOrganizer(event.id);
-        return (
-          <Link
-            key={event.id}
-            href={`/events/${event.id}`}
-            className="relative block"
-          >
-            <Badge
-              variant={isOrganizer ? "default" : "outline"}
-              className="absolute left-2 top-2 z-10"
-            >
-              {isOrganizer ? "주최" : "참여"}
-            </Badge>
-            <EventCard event={event} />
-          </Link>
-        );
-      })}
+      {events.map((event) => (
+        <Link
+          key={event.id}
+          href={`/events/${event.id}`}
+          className="relative block"
+        >
+          {/* 참여자 관리(event_participants)는 아직 구현 전이라 이 목록엔 내가 주최한 이벤트만 표시된다 */}
+          <Badge variant="default" className="absolute left-2 top-2 z-10">
+            주최
+          </Badge>
+          <EventCard event={event} />
+        </Link>
+      ))}
     </div>
   );
 }
