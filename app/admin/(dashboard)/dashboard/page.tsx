@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { connection } from "next/server";
 import {
   ActivityIcon,
   CalendarIcon,
@@ -9,7 +8,7 @@ import {
 
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { StatCard } from "@/components/stat-card";
-import { createMockEvents } from "@/lib/mock-data";
+import { getDashboardStats } from "@/lib/supabase/queries/admin";
 
 export default function AdminDashboardPage() {
   return (
@@ -23,16 +22,8 @@ export default function AdminDashboardPage() {
 }
 
 async function DashboardStats() {
-  // mock 데이터가 new Date()/랜덤 값을 사용해 cacheComponents 프리렌더링과 충돌하므로 동적 렌더링으로 명시
-  await connection();
-  const events = createMockEvents(24);
-  const totalEvents = events.length;
-  const activeEvents = events.filter(
-    (event) => event.status === "ongoing",
-  ).length;
-  // 사용자/신규 참여 집계는 실제 프로필/참여 테이블이 없어(Task 007 이전) 고정 mock 값 사용, 실제 집계는 Task011 범위
-  const totalUsers = 132;
-  const newParticipantsThisWeek = 18;
+  const { totalEvents, activeEvents, totalUsers, newParticipantsThisWeek } =
+    await getDashboardStats();
 
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

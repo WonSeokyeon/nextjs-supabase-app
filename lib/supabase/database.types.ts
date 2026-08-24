@@ -106,6 +106,7 @@ export type Database = {
           created_at: string;
           full_name: string | null;
           id: string;
+          role: string;
           updated_at: string;
           username: string | null;
         };
@@ -114,6 +115,7 @@ export type Database = {
           created_at?: string;
           full_name?: string | null;
           id: string;
+          role?: string;
           updated_at?: string;
           username?: string | null;
         };
@@ -122,6 +124,7 @@ export type Database = {
           created_at?: string;
           full_name?: string | null;
           id?: string;
+          role?: string;
           updated_at?: string;
           username?: string | null;
         };
@@ -132,7 +135,18 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      admin_list_profiles: {
+        Args: never;
+        Returns: {
+          avatar_url: string;
+          created_at: string;
+          email: string;
+          full_name: string;
+          id: string;
+          role: string;
+          username: string;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;

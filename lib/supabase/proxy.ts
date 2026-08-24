@@ -47,18 +47,39 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
+  const pathname = request.nextUrl.pathname;
+  const isAdminPath = pathname.startsWith("/admin");
+  const isAdminLoginPath = pathname.startsWith("/admin/login");
+
   if (
-    request.nextUrl.pathname !== "/" &&
+    pathname !== "/" &&
     !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth") &&
+    !pathname.startsWith("/login") &&
+    !pathname.startsWith("/auth") &&
     // F004: 초대 링크 미리보기는 비로그인 사용자도 접근 가능해야 함
-    !request.nextUrl.pathname.startsWith("/join")
+    !pathname.startsWith("/join") &&
+    // 관리자 로그인 페이지는 그 자체가 비로그인 진입점이어야 함
+    !isAdminLoginPath
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = isAdminPath ? "/admin/login" : "/auth/login";
     return NextResponse.redirect(url);
+  }
+
+  // F014: 관리자 영역은 로그인만으론 부족하다 — profiles.role이 admin인 사용자만 통과시킨다
+  if (user && isAdminPath && !isAdminLoginPath) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.sub)
+      .maybeSingle();
+
+    if (profile?.role !== "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin/login";
+      return NextResponse.redirect(url);
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

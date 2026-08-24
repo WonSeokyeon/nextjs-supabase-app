@@ -3,7 +3,7 @@ import { statusFromDates } from "@/lib/event-status";
 import type { Event } from "@/lib/types/event";
 import type { Tables } from "@/lib/supabase/database.types";
 
-function mapRow(row: Tables<"events">): Event {
+export function mapRow(row: Tables<"events">): Event {
   return {
     id: row.id,
     title: row.title,

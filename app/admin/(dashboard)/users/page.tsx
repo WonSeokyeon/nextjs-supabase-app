@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { connection } from "next/server";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
-import { createMockProfile } from "@/lib/mock-data";
+import { getAdminProfiles } from "@/lib/supabase/queries/profiles";
 
 export default function AdminUsersPage() {
   return (
@@ -29,12 +28,7 @@ export default function AdminUsersPage() {
 }
 
 async function AdminUsersTable() {
-  // mock 데이터가 new Date()/랜덤 값을 사용해 cacheComponents 프리렌더링과 충돌하므로 동적 렌더링으로 명시
-  await connection();
-  // 8명 중 1명을 admin으로 섞어 역할 배지 두 종류가 모두 보이도록 함
-  const users = Array.from({ length: 8 }, (_, i) =>
-    createMockProfile(i === 0 ? { role: "admin" } : {}),
-  );
+  const users = await getAdminProfiles();
 
   return (
     <Table>
@@ -48,7 +42,7 @@ async function AdminUsersTable() {
       </TableHeader>
       <TableBody>
         {users.map((user) => {
-          const displayName = user.displayName ?? user.email;
+          const displayName = user.displayName;
           return (
             <TableRow key={user.id}>
               <TableCell className="flex items-center gap-2 font-medium">

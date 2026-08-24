@@ -55,6 +55,9 @@ export function DeleteEventDialog({
     toast.success("이벤트가 삭제되었습니다");
     if (redirectTo) {
       router.push(redirectTo);
+    } else if (eventId) {
+      // 같은 페이지에 머무르는 경우(예: 관리자 테이블) 삭제된 행이 즉시 반영되도록 갱신
+      router.refresh();
     }
   }
 

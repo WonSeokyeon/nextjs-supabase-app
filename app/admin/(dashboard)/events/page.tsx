@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { connection } from "next/server";
 
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -13,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { DeleteEventDialog } from "@/components/delete-event-dialog";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
-import { createMockEvents, createMockParticipants } from "@/lib/mock-data";
+import { getAllEventsForAdmin } from "@/lib/supabase/queries/admin";
 
 const STATUS_LABEL = {
   upcoming: { label: "예정", variant: "outline" as const },
@@ -35,9 +34,7 @@ export default function AdminEventsPage() {
 }
 
 async function AdminEventsTable() {
-  // mock 데이터가 new Date()/랜덤 값을 사용해 cacheComponents 프리렌더링과 충돌하므로 동적 렌더링으로 명시
-  await connection();
-  const events = createMockEvents(8);
+  const events = await getAllEventsForAdmin();
 
   return (
     <Table>
@@ -54,7 +51,6 @@ async function AdminEventsTable() {
       <TableBody>
         {events.map((event) => {
           const status = STATUS_LABEL[event.status];
-          const participantCount = createMockParticipants(event.id, 4).length;
           return (
             <TableRow key={event.id}>
               <TableCell className="font-medium">{event.title}</TableCell>
@@ -64,12 +60,15 @@ async function AdminEventsTable() {
               <TableCell>
                 <Badge variant={status.variant}>{status.label}</Badge>
               </TableCell>
-              <TableCell>{participantCount}</TableCell>
+              <TableCell>{event.participantCount}</TableCell>
               <TableCell className="text-muted-foreground">
                 {new Date(event.createdAt).toLocaleDateString("ko-KR")}
               </TableCell>
               <TableCell className="text-right">
-                <DeleteEventDialog eventTitle={event.title} />
+                <DeleteEventDialog
+                  eventId={event.id}
+                  eventTitle={event.title}
+                />
               </TableCell>
             </TableRow>
           );
