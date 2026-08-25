@@ -133,10 +133,27 @@ Gather는 5-30명 규모의 소규모 이벤트 주최자와 참여자를 위한
 
 - **Task 010: 참여자 관리** ✅ - 완료
   - ✅ 초대 링크 참여 로직 구현 (F004)
+    - ✅ `/join/[code]` 페이지에서 초대 코드로 이벤트 조회 및 비로그인 미리보기 제공
+    - ✅ 참여 확인 버튼 클릭 시 `event_participants`에 insert
+    - ✅ 비로그인 사용자가 참여 시도 시 `/auth/login`으로 리다이렉트
   - ✅ 중복 참여 방지 로직 구현
+    - ✅ DB `unique(event_id, user_id)` 제약 조건 추가
+    - ✅ 클라이언트: insert 실패 시 `23505` 에러 코드를 감지해 "이미 참여한 이벤트입니다"로 안내
+    - ✅ 서버: `hasJoinedEvent()`로 사전 조회해 이미 참여했으면 참여 버튼 자체를 숨김
+    - ✅ 주최자 본인이 자기 이벤트 초대 링크에 접근한 경우 참여 버튼 대신 상세 페이지 링크 노출
   - ✅ 실시간 참여자 수 카운트 업데이트
+    - ✅ `event_participants` 테이블을 `supabase_realtime` publication에 추가 (마이그레이션)
+    - ✅ 참여자 섹션을 `ParticipantList` 클라이언트 컴포넌트로 분리
+    - ✅ `postgres_changes` INSERT 이벤트 구독으로 새 참여자를 새로고침 없이 목록/카운트에 반영
+    - ✅ 신규 참여자의 `profiles` 정보를 클라이언트에서 추가 조회해 이름/아바타 표시
+    - ✅ 컴포넌트 언마운트 시 `removeChannel`로 구독 정리
   - ✅ 내가 참여한/만든 이벤트 목록 조회 구현 (F007)
+    - ✅ `getMyEvents()`에서 organizer 이벤트와 participant 이벤트를 병렬 조회
+    - ✅ 주최자 본인이 참여자로도 등록된 경우 중복 제거 (organizer role 우선)
+    - ✅ 시작 일시(`startAt`) 기준 오름차순 정렬
   - ✅ Playwright MCP를 활용한 실시간 참여자 업데이트 테스트
+    - ✅ `next build`/`typecheck`/`lint` 통과로 정적 검증 완료
+    - ⚠️ 실제 브라우저 자동화(Playwright)는 테스트 계정 로그인 실패(Invalid login credentials)로 미실행 — 알려진 갭으로 기록
 
 - **Task 011: 관리자 대시보드 백엔드 구현**
   - 대시보드 지표 집계 쿼리 구현 (F012)
