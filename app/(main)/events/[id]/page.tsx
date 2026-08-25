@@ -36,7 +36,7 @@ export default function EventDetailPage({
   params: Promise<{ id: string }>;
 }) {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6">
+    <div className="px-4 py-6">
       <Suspense fallback={<LoadingSkeleton count={1} />}>
         <EventDetailContent params={params} />
       </Suspense>

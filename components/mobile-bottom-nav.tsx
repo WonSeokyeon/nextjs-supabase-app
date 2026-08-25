@@ -13,7 +13,7 @@ export function MobileBottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-10 grid h-16 grid-cols-3 items-center border-t bg-background px-4">
+    <nav className="sticky bottom-0 z-10 grid h-16 grid-cols-3 items-center border-t bg-background px-4">
       <NavLink
         item={EVENTS_ITEM}
         active={pathname.startsWith(EVENTS_ITEM.href)}
@@ -40,7 +40,7 @@ export function MobileBottomNav() {
 // usePathname() 확정 전(Suspense 대체 화면)에 보여줄, 활성 탭 강조가 없는 동일한 레이아웃
 export function MobileBottomNavFallback() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-10 grid h-16 grid-cols-3 items-center border-t bg-background px-4">
+    <nav className="sticky bottom-0 z-10 grid h-16 grid-cols-3 items-center border-t bg-background px-4">
       <NavLink item={EVENTS_ITEM} active={false} />
 
       <div className="flex items-center justify-center">

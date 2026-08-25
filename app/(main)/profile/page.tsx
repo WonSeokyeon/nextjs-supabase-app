@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export default function ProfilePage() {
   return (
-    <div className="mx-auto max-w-md px-4 py-6">
+    <div className="px-4 py-6">
       <h1 className="mb-4 text-xl font-bold">프로필</h1>
       <Suspense fallback={<LoadingSkeleton count={1} />}>
         <ProfileContent />

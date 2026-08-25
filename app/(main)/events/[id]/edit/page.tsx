@@ -20,7 +20,7 @@ export default function EditEventPage({
   params: Promise<{ id: string }>;
 }) {
   return (
-    <div className="mx-auto max-w-lg px-4 py-6">
+    <div className="px-4 py-6">
       <Suspense fallback={<LoadingSkeleton count={1} />}>
         <EditEventForm params={params} />
       </Suspense>
