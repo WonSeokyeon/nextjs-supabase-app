@@ -97,7 +97,12 @@ async function EventDetailContent({
 
       {isOrganizer && (
         <div className="mb-6 flex flex-wrap gap-2">
-          <InviteShareButton inviteCode={event.inviteCode} />
+          <InviteShareButton
+            inviteCode={event.inviteCode}
+            eventTitle={event.title}
+            eventDescription={event.description}
+            coverImageUrl={event.coverImageUrl}
+          />
           <Button variant="outline" asChild>
             <Link href={`/events/${id}/edit`}>
               <PencilIcon />

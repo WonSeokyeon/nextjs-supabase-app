@@ -47,14 +47,31 @@ export function EventForm({ mode, eventId, defaultValues }: EventFormProps) {
   async function onSubmit(values: EventFormSchema) {
     const supabase = createClient();
 
-    if (mode === "create") {
-      const { data: claims } = await supabase.auth.getClaims();
-      const userId = claims?.claims.sub;
-      if (!userId) {
-        toast.error("로그인이 필요합니다");
+    const { data: claims } = await supabase.auth.getClaims();
+    const userId = claims?.claims.sub;
+    if (!userId) {
+      toast.error("로그인이 필요합니다");
+      return;
+    }
+
+    // 새로 선택된 파일이 있을 때만 업로드한다 — 수정 모드에서 이미지를 안 바꾸면 기존 URL 유지
+    let coverImageUrl: string | null = null;
+    if (coverImage) {
+      const path = `${userId}/${crypto.randomUUID()}-${coverImage.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("event-covers")
+        .upload(path, coverImage);
+
+      if (uploadError) {
+        toast.error("커버 이미지 업로드에 실패했습니다");
         return;
       }
 
+      coverImageUrl = supabase.storage.from("event-covers").getPublicUrl(path)
+        .data.publicUrl;
+    }
+
+    if (mode === "create") {
       // 초대 코드는 DB unique 제약을 걸어뒀으므로, 충돌(23505) 시에만 코드를 새로 뽑아 재시도한다
       let insertError: string | null = null;
       for (let attempt = 0; attempt < 5; attempt++) {
@@ -66,6 +83,7 @@ export function EventForm({ mode, eventId, defaultValues }: EventFormProps) {
           end_at: new Date(values.endAt).toISOString(),
           invite_code: randomInviteCode(),
           created_by: userId,
+          cover_image_url: coverImageUrl,
         });
 
         if (!error) {
@@ -95,6 +113,7 @@ export function EventForm({ mode, eventId, defaultValues }: EventFormProps) {
         location: values.location,
         start_at: new Date(values.startAt).toISOString(),
         end_at: new Date(values.endAt).toISOString(),
+        ...(coverImageUrl ? { cover_image_url: coverImageUrl } : {}),
       })
       .eq("id", eventId);
 
@@ -196,7 +215,7 @@ export function EventForm({ mode, eventId, defaultValues }: EventFormProps) {
           />
           {coverImage && (
             <p className="text-xs text-muted-foreground">
-              {coverImage.name} 선택됨 (업로드는 아직 지원되지 않습니다)
+              {coverImage.name} 선택됨
             </p>
           )}
         </div>
