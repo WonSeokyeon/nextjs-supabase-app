@@ -1,14 +1,13 @@
-import Link from "next/link";
 import { Suspense } from "react";
 
-import { EventCard } from "@/components/event-card";
 import { EmptyState } from "@/components/empty-state";
+import { EventStatusFilter } from "@/components/event-status-filter";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { getMyEvents } from "@/lib/supabase/queries/events";
 
 export default function EventsPage() {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
+    <div className="px-4 py-6">
       <h1 className="mb-4 text-xl font-bold">내 이벤트</h1>
       <Suspense fallback={<LoadingSkeleton count={6} />}>
         <EventsGrid />
@@ -29,13 +28,5 @@ async function EventsGrid() {
     );
   }
 
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      {events.map((event) => (
-        <Link key={event.id} href={`/events/${event.id}`} className="block">
-          <EventCard event={event} role={event.role} />
-        </Link>
-      ))}
-    </div>
-  );
+  return <EventStatusFilter events={events} />;
 }
