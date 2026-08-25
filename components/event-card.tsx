@@ -23,6 +23,14 @@ const STATUS_LABEL: Record<
   ended: { label: "종료", variant: "secondary" },
 };
 
+const ROLE_LABEL: Record<
+  NonNullable<EventCardProps["role"]>,
+  { label: string; variant: "default" | "outline" }
+> = {
+  organizer: { label: "주최", variant: "default" },
+  participant: { label: "참여", variant: "outline" },
+};
+
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   month: "long",
   day: "numeric",
@@ -40,8 +48,9 @@ function formatEventPeriod(startAt: string, endAt: string): string {
   return `${start} - ${end}`;
 }
 
-export function EventCard({ event, onClick }: EventCardProps) {
+export function EventCard({ event, onClick, role }: EventCardProps) {
   const status = STATUS_LABEL[event.status];
+  const roleLabel = role ? ROLE_LABEL[role] : null;
 
   return (
     <Card
@@ -75,8 +84,19 @@ export function EventCard({ event, onClick }: EventCardProps) {
       )}
       <CardHeader className="pt-6">
         <div className="flex items-start justify-between gap-2">
-          <CardTitle className="line-clamp-1">{event.title}</CardTitle>
-          <Badge variant={status.variant}>{status.label}</Badge>
+          <div className="flex min-w-0 items-center gap-1.5">
+            {roleLabel && (
+              <Badge variant={roleLabel.variant} className="shrink-0">
+                {roleLabel.label}
+              </Badge>
+            )}
+            <CardTitle className="line-clamp-1 min-w-0">
+              {event.title}
+            </CardTitle>
+          </div>
+          <Badge variant={status.variant} className="shrink-0">
+            {status.label}
+          </Badge>
         </div>
         <CardDescription className="line-clamp-2">
           {event.description}

@@ -9,6 +9,8 @@ import type { DisplayProfile } from "@/lib/supabase/queries/profiles";
 export interface EventCardProps {
   event: Event;
   onClick?: () => void;
+  // "내 이벤트" 목록에서 주최/참여 여부를 함께 보여줄 때만 전달 (F007)
+  role?: "organizer" | "participant";
 }
 
 // 참여자 카드 컴포넌트 Props — profiles 테이블 기반 최소 표시 정보(이름/아바타)만 사용

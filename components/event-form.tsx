@@ -89,6 +89,7 @@ export function EventForm({ mode, eventId, defaultValues }: EventFormProps) {
         if (!error) {
           toast.success("이벤트가 생성되었습니다");
           router.push("/events");
+          router.refresh();
           return;
         }
 
@@ -124,6 +125,7 @@ export function EventForm({ mode, eventId, defaultValues }: EventFormProps) {
 
     toast.success("이벤트가 수정되었습니다");
     router.push(`/events/${eventId}`);
+    router.refresh();
   }
 
   return (
@@ -175,34 +177,42 @@ export function EventForm({ mode, eventId, defaultValues }: EventFormProps) {
           )}
         />
 
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="startAt"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>시작 일시</FormLabel>
-                <FormControl>
-                  <Input type="datetime-local" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="startAt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>시작 일시</FormLabel>
+                  <FormControl>
+                    <Input type="datetime-local" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="endAt"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>종료 일시</FormLabel>
-                <FormControl>
-                  <Input type="datetime-local" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="endAt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>종료 일시</FormLabel>
+                  <FormControl>
+                    <Input type="datetime-local" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          {/* 시작/종료 일시 비교 에러(예: 종료가 시작보다 빠름)는 두 컬럼 중 한쪽에만 붙이면
+              그 컬럼만 줄바꿈되어 정렬이 깨지므로, 전체 너비로 한 줄에 펼쳐서 보여준다 */}
+          {(form.formState.errors.startAt || form.formState.errors.endAt) && (
+            <p className="text-sm text-destructive">
+              {form.formState.errors.startAt?.message ??
+                form.formState.errors.endAt?.message}
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">

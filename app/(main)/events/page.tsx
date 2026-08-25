@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { EventCard } from "@/components/event-card";
 import { EmptyState } from "@/components/empty-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
@@ -33,18 +32,8 @@ async function EventsGrid() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {events.map((event) => (
-        <Link
-          key={event.id}
-          href={`/events/${event.id}`}
-          className="relative block"
-        >
-          <Badge
-            variant={event.role === "organizer" ? "default" : "outline"}
-            className="absolute left-2 top-2 z-10"
-          >
-            {event.role === "organizer" ? "주최" : "참여"}
-          </Badge>
-          <EventCard event={event} />
+        <Link key={event.id} href={`/events/${event.id}`} className="block">
+          <EventCard event={event} role={event.role} />
         </Link>
       ))}
     </div>

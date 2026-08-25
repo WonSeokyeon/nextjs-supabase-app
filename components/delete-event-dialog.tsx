@@ -46,17 +46,19 @@ export function DeleteEventDialog({
       setIsDeleting(false);
 
       if (error) {
-        toast.error("이벤트 삭제에 실패했습니다");
+        toast.error("이벤트 삭제에 실패했습니다", { position: "top-right" });
         return;
       }
     }
 
     setOpen(false);
-    toast.success("이벤트가 삭제되었습니다");
+    toast.success("이벤트가 삭제되었습니다", { position: "top-right" });
     if (redirectTo) {
       router.push(redirectTo);
-    } else if (eventId) {
-      // 같은 페이지에 머무르는 경우(예: 관리자 테이블) 삭제된 행이 즉시 반영되도록 갱신
+    }
+    // Client Router Cache에 남아있는 이전 목록을 무효화해 삭제 결과를 즉시 반영한다
+    // (redirectTo 없이 같은 페이지에 머무르는 경우 포함)
+    if (eventId) {
       router.refresh();
     }
   }
