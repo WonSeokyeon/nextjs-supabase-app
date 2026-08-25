@@ -4,25 +4,26 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* 파스텔 스카이블루 & 레몬 테마 */
+    --background: 204 100% 98%;
+    --foreground: 215 30% 22%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 215 30% 22%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --popover-foreground: 215 30% 22%;
+    --primary: 205 70% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 204 60% 94%;
+    --secondary-foreground: 210 40% 25%;
+    --muted: 204 50% 95%;
+    --muted-foreground: 215 15% 45%;
+    --accent: 48 90% 88%;
+    --accent-foreground: 40 60% 25%;
+    --destructive: 0 70% 63%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 204 40% 90%;
+    --input: 204 40% 90%;
+    --ring: 205 70% 58%;
     /* dataviz 스킬 검증 팔레트(categorical slot 1/2/3: blue/orange/aqua) */
     --chart-1: 213 68% 50%;
     --chart-2: 17 82% 56%;
@@ -32,25 +33,26 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    /* 파스텔 스카이블루 & 레몬 테마 (다크) */
+    --background: 215 30% 12%;
+    --foreground: 204 40% 92%;
+    --card: 215 28% 15%;
+    --card-foreground: 204 40% 92%;
+    --popover: 215 28% 15%;
+    --popover-foreground: 204 40% 92%;
+    --primary: 205 75% 68%;
+    --primary-foreground: 215 40% 12%;
+    --secondary: 215 20% 20%;
+    --secondary-foreground: 204 30% 90%;
+    --muted: 215 20% 20%;
+    --muted-foreground: 210 15% 65%;
+    --accent: 48 70% 70%;
+    --accent-foreground: 40 50% 15%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 20% 22%;
+    --input: 215 20% 22%;
+    --ring: 205 75% 68%;
     /* dataviz 스킬 검증 팔레트(다크 서피스 #1a1a19 기준 재검증) */
     --chart-1: 213 77% 56%;
     --chart-2: 17 70% 50%;
