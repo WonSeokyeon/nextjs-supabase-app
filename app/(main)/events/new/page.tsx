@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
 
@@ -8,12 +7,6 @@ import { LoadingSkeleton } from "@/components/loading-skeleton";
 export default function NewEventPage() {
   return (
     <div className="px-4 py-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold">이벤트 만들기</h1>
-        <Link href="/events" className="text-sm text-muted-foreground">
-          취소
-        </Link>
-      </div>
       <Suspense fallback={<LoadingSkeleton count={1} />}>
         <NewEventForm />
       </Suspense>
@@ -27,5 +20,5 @@ async function NewEventForm() {
   // 남아있는 채로 보이는 문제가 있었다. connection()으로 동적 렌더링을 강제해
   // 재방문할 때마다 항상 새로 마운트되도록 한다.
   await connection();
-  return <EventForm mode="create" />;
+  return <EventForm mode="create" cancelHref="/events" />;
 }

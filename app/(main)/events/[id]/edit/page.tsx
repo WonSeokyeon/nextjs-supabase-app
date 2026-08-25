@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 
@@ -41,24 +40,17 @@ async function EditEventForm({ params }: { params: Promise<{ id: string }> }) {
   }
 
   return (
-    <>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold">이벤트 수정</h1>
-        <Link href={`/events/${id}`} className="text-sm text-muted-foreground">
-          취소
-        </Link>
-      </div>
-      <EventForm
-        mode="edit"
-        eventId={id}
-        defaultValues={{
-          title: event.title,
-          description: event.description,
-          location: event.location,
-          startAt: toDatetimeLocal(event.startAt),
-          endAt: toDatetimeLocal(event.endAt),
-        }}
-      />
-    </>
+    <EventForm
+      mode="edit"
+      eventId={id}
+      cancelHref={`/events/${id}`}
+      defaultValues={{
+        title: event.title,
+        description: event.description,
+        location: event.location,
+        startAt: toDatetimeLocal(event.startAt),
+        endAt: toDatetimeLocal(event.endAt),
+      }}
+    />
   );
 }

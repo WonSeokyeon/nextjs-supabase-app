@@ -8,6 +8,14 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Form,
   FormControl,
   FormField,
@@ -26,11 +34,19 @@ interface EventFormProps {
   mode: "create" | "edit";
   eventId?: string;
   defaultValues?: Partial<EventFormSchema>;
+  // 취소 시 이동할 경로 — 작성한 내용이 없으면 바로 이동, 있으면 확인 다이얼로그를 거친다
+  cancelHref: string;
 }
 
-export function EventForm({ mode, eventId, defaultValues }: EventFormProps) {
+export function EventForm({
+  mode,
+  eventId,
+  defaultValues,
+  cancelHref,
+}: EventFormProps) {
   const router = useRouter();
   const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const form = useForm<EventFormSchema>({
     resolver: zodResolver(eventFormSchema),
@@ -128,116 +144,177 @@ export function EventForm({ mode, eventId, defaultValues }: EventFormProps) {
     router.refresh();
   }
 
+  // 파일 선택은 react-hook-form이 추적하는 필드가 아니므로 isDirty와 별도로 확인한다
+  const hasUnsavedChanges = form.formState.isDirty || coverImage !== null;
+
+  function handleCancelClick() {
+    if (hasUnsavedChanges) {
+      setShowCancelDialog(true);
+      return;
+    }
+    router.push(cancelHref);
+  }
+
+  function handleDiscardChanges() {
+    setShowCancelDialog(false);
+    router.push(cancelHref);
+  }
+
+  async function handleSubmitFromDialog() {
+    setShowCancelDialog(false);
+    await form.handleSubmit(onSubmit)();
+  }
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>제목</FormLabel>
-              <FormControl>
-                <Input placeholder="예: 동아리 여름 MT" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>설명</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="이벤트에 대해 간단히 설명해주세요"
-                  className="min-h-24"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>장소</FormLabel>
-              <FormControl>
-                <Input placeholder="예: 서울 강남구 카페거리" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="startAt"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>시작 일시</FormLabel>
-                  <FormControl>
-                    <Input type="datetime-local" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="endAt"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>종료 일시</FormLabel>
-                  <FormControl>
-                    <Input type="datetime-local" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          {/* 시작/종료 일시 비교 에러(예: 종료가 시작보다 빠름)는 두 컬럼 중 한쪽에만 붙이면
-              그 컬럼만 줄바꿈되어 정렬이 깨지므로, 전체 너비로 한 줄에 펼쳐서 보여준다 */}
-          {(form.formState.errors.startAt || form.formState.errors.endAt) && (
-            <p className="text-sm text-destructive">
-              {form.formState.errors.startAt?.message ??
-                form.formState.errors.endAt?.message}
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="coverImage">커버 이미지 (선택)</Label>
-          <Input
-            id="coverImage"
-            type="file"
-            accept="image/*"
-            onChange={(e) => setCoverImage(e.target.files?.[0] ?? null)}
-          />
-          {coverImage && (
-            <p className="text-xs text-muted-foreground">
-              {coverImage.name} 선택됨
-            </p>
-          )}
-        </div>
-
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={form.formState.isSubmitting}
+    <>
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-xl font-bold">
+          {mode === "create" ? "이벤트 만들기" : "이벤트 수정"}
+        </h1>
+        <button
+          type="button"
+          onClick={handleCancelClick}
+          className="text-sm text-muted-foreground"
         >
-          {mode === "create" ? "이벤트 만들기" : "수정 완료"}
-        </Button>
-      </form>
-    </Form>
+          취소
+        </button>
+      </div>
+
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>작성 중인 내용이 있어요</DialogTitle>
+            <DialogDescription>
+              {mode === "create"
+                ? "취소하면 작성한 내용이 사라집니다. 계속 진행할까요?"
+                : "취소하면 수정한 내용이 사라집니다. 계속 진행할까요?"}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="destructive" onClick={handleDiscardChanges}>
+              취소
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleSubmitFromDialog}
+            >
+              {mode === "create" ? "등록" : "수정"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>제목</FormLabel>
+                <FormControl>
+                  <Input placeholder="예: 동아리 여름 MT" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>설명</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="이벤트에 대해 간단히 설명해주세요"
+                    className="min-h-24"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="location"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>장소</FormLabel>
+                <FormControl>
+                  <Input placeholder="예: 서울 강남구 카페거리" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="startAt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>시작 일시</FormLabel>
+                    <FormControl>
+                      <Input type="datetime-local" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="endAt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>종료 일시</FormLabel>
+                    <FormControl>
+                      <Input type="datetime-local" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            {/* 시작/종료 일시 비교 에러(예: 종료가 시작보다 빠름)는 두 컬럼 중 한쪽에만 붙이면
+              그 컬럼만 줄바꿈되어 정렬이 깨지므로, 전체 너비로 한 줄에 펼쳐서 보여준다 */}
+            {(form.formState.errors.startAt || form.formState.errors.endAt) && (
+              <p className="text-sm text-destructive">
+                {form.formState.errors.startAt?.message ??
+                  form.formState.errors.endAt?.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="coverImage">커버 이미지 (선택)</Label>
+            <Input
+              id="coverImage"
+              type="file"
+              accept="image/*"
+              onChange={(e) => setCoverImage(e.target.files?.[0] ?? null)}
+            />
+            {coverImage && (
+              <p className="text-xs text-muted-foreground">
+                {coverImage.name} 선택됨
+              </p>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={form.formState.isSubmitting}
+          >
+            {mode === "create" ? "이벤트 만들기" : "수정 완료"}
+          </Button>
+        </form>
+      </Form>
+    </>
   );
 }
