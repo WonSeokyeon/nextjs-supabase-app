@@ -56,6 +56,7 @@ export type Database = {
           start_at: string;
           title: string;
           updated_at: string;
+          view_count: number;
         };
         Insert: {
           cover_image_url?: string | null;
@@ -69,6 +70,7 @@ export type Database = {
           start_at: string;
           title: string;
           updated_at?: string;
+          view_count?: number;
         };
         Update: {
           cover_image_url?: string | null;
@@ -82,6 +84,7 @@ export type Database = {
           start_at?: string;
           title?: string;
           updated_at?: string;
+          view_count?: number;
         };
         Relationships: [];
       };
@@ -146,6 +149,10 @@ export type Database = {
           role: string;
           username: string;
         }[];
+      };
+      increment_event_view_count: {
+        Args: { p_event_id: string };
+        Returns: undefined;
       };
     };
     Enums: {

@@ -111,6 +111,9 @@ export function EventCard({ event, onClick, role }: EventCardProps) {
           <MapPinIcon className="size-4 shrink-0" />
           <span className="line-clamp-1">{event.location}</span>
         </div>
+        <div className="text-right">
+          <span>방문자수 : {event.viewCount}명</span>
+        </div>
       </CardContent>
     </Card>
   );

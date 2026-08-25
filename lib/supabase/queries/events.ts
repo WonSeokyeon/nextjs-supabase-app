@@ -15,6 +15,7 @@ export function mapRow(row: Tables<"events">): Event {
     endAt: row.end_at,
     createdBy: row.created_by,
     status: statusFromDates(row.start_at, row.end_at),
+    viewCount: row.view_count,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -76,6 +77,13 @@ export async function getEventById(id: string): Promise<Event | null> {
 
   if (error || !data) return null;
   return mapRow(data);
+}
+
+// 방문자수 카운트 — events UPDATE RLS는 주최자만 허용하므로, 누구나 볼 수 있는
+// 상세 페이지 조회수는 SECURITY DEFINER RPC로 안전하게 증가시킨다
+export async function incrementEventViewCount(id: string): Promise<void> {
+  const supabase = await createClient();
+  await supabase.rpc("increment_event_view_count", { p_event_id: id });
 }
 
 // F002, F004: 초대 코드로 이벤트 조회 — RLS가 조회를 공개했으므로 비로그인 사용자도 접근 가능

@@ -10,7 +10,10 @@ import { DeleteEventDialog } from "@/components/delete-event-dialog";
 import { InviteShareButton } from "@/components/invite-share-button";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ParticipantList } from "@/components/participant-list";
-import { getEventById } from "@/lib/supabase/queries/events";
+import {
+  getEventById,
+  incrementEventViewCount,
+} from "@/lib/supabase/queries/events";
 import { getEventParticipants } from "@/lib/supabase/queries/participants";
 import { getProfilesByIds } from "@/lib/supabase/queries/profiles";
 import { createClient } from "@/lib/supabase/server";
@@ -52,6 +55,9 @@ async function EventDetailContent({
   const { id } = await params;
   const event = await getEventById(id);
   if (!event) notFound();
+
+  // 이벤트 클릭(상세 페이지 방문)마다 방문자수를 1 증가시킨다
+  await incrementEventViewCount(id);
 
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();

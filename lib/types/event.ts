@@ -19,6 +19,7 @@ export interface Event {
   endAt: string;
   createdBy: string;
   status: "upcoming" | "ongoing" | "ended"; // F008: 이벤트 상태 자동 관리
+  viewCount: number; // 이벤트 상세 페이지 방문 횟수
   createdAt: string;
   updatedAt: string;
 }
